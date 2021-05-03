@@ -4,9 +4,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import fr.helios.rainbowsixsiege.utils.References;
 import fr.helios.rainbowsixsiege.utils.Vec3;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,7 +17,10 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,14 +32,8 @@ import java.util.List;
 
 public class EntityBullet extends Entity implements IProjectile
 {
-    private static final Predicate<Entity> BULLET_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>()
-    {
-        @Override public boolean apply(@Nullable Entity input)
-        {
-            return input.canBeCollidedWith();
-        }
-    });
-    private static final DataParameter<Byte> CRITICAL = EntityDataManager.<Byte>createKey(EntityBullet.class, DataSerializers.BYTE);
+    private static final Predicate<Entity> BULLET_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, input -> input.canBeCollidedWith());
+    private static final DataParameter<Byte> CRITICAL = EntityDataManager.createKey(EntityBullet.class, DataSerializers.BYTE);
     public static final ResourceLocation bullet = new ResourceLocation(References.MODID, "entitybullet");
 
     private Entity shooter;
@@ -52,7 +46,7 @@ public class EntityBullet extends Entity implements IProjectile
         super(world);
         this.damage = 30.0F;
         this.knockbackStrength = 1f;
-        this.speed = 5f;
+        this.speed = 50f;
         this.setSize(0.5F, 0.5F);
     }
 
@@ -85,7 +79,7 @@ public class EntityBullet extends Entity implements IProjectile
 
     @Override protected void entityInit()
     {
-        this.dataManager.register(CRITICAL, Byte.valueOf((byte)0));
+        this.dataManager.register(CRITICAL, (byte)0);
     }
 
     public void shoot(EntityPlayer player) {
@@ -126,6 +120,7 @@ public class EntityBullet extends Entity implements IProjectile
     @SideOnly(Side.CLIENT)
     @Override public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
+        System.out.println("UPDATE CLIENT");
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
@@ -145,6 +140,7 @@ public class EntityBullet extends Entity implements IProjectile
 
     @Override public void onUpdate()
     {
+        if(!world.isRemote)System.out.println("UPDATE SERVER");
         super.onUpdate();
 
         if(!hasRot()) setRot(new Vec3(posX, posY, posZ));
@@ -182,46 +178,44 @@ public class EntityBullet extends Entity implements IProjectile
 
     protected void onHit(@Nonnull Entity victim) {
 
-        if(victim != null) {
-            int amountDamage = (int)this.damage;
-            DamageSource damagesource;
+        int amountDamage = (int)this.damage;
+        DamageSource damagesource;
 
-            if (this.shooter == null)
-                damagesource = causeBulletDamage(this, this);
-            else
-                damagesource = causeBulletDamage(this, this.shooter);
+        if (this.shooter == null)
+            damagesource = causeBulletDamage(this, this);
+        else
+            damagesource = causeBulletDamage(this, this.shooter);
 
-            if (victim.attackEntityFrom(damagesource, (float)amountDamage))
+        if (victim.attackEntityFrom(damagesource, (float)amountDamage))
+        {
+            System.out.println("HIT");
+            if (victim instanceof EntityLivingBase)
             {
-                System.out.println("HIT");
-                if (victim instanceof EntityLivingBase)
+                EntityLivingBase livingVictim = (EntityLivingBase)victim;
+
+                if (this.knockbackStrength > 0)
                 {
-                    EntityLivingBase livingVictim = (EntityLivingBase)victim;
+                    float norme2d = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
 
-                    if (this.knockbackStrength > 0)
+                    if (norme2d > 0.0F)
                     {
-                        float norme2d = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-
-                        if (norme2d > 0.0F)
-                        {
-                            livingVictim.addVelocity(this.motionX * (double)this.knockbackStrength * 0.5 / (double)norme2d, 0.1D, this.motionZ * (double)this.knockbackStrength * 0.5D / (double)norme2d);
-                        }
-                    }
-
-                    if (this.shooter instanceof EntityLivingBase)
-                    {
-                        EnchantmentHelper.applyThornEnchantments(livingVictim, this.shooter);
-                    }
-
-                    if (this.shooter != null && livingVictim != this.shooter && livingVictim instanceof EntityPlayer && this.shooter instanceof EntityPlayerMP)
-                    {
-                        ((EntityPlayerMP)this.shooter).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
+                        livingVictim.addVelocity(this.motionX * (double)this.knockbackStrength * 0.5 / (double)norme2d, 0.1D, this.motionZ * (double)this.knockbackStrength * 0.5D / (double)norme2d);
                     }
                 }
 
-                if(!(victim instanceof EntityEnderman))
-                    setDead();
+                if (this.shooter instanceof EntityLivingBase)
+                {
+                    EnchantmentHelper.applyThornEnchantments(livingVictim, this.shooter);
+                }
+
+                if (this.shooter != null && livingVictim != this.shooter && livingVictim instanceof EntityPlayer && this.shooter instanceof EntityPlayerMP)
+                {
+                    ((EntityPlayerMP)this.shooter).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
+                }
             }
+
+            if(!(victim instanceof EntityEnderman))
+                setDead();
         }
     }
 
@@ -231,14 +225,14 @@ public class EntityBullet extends Entity implements IProjectile
 
     public boolean getIsCritical()
     {
-        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
+        byte b0 = this.dataManager.get(CRITICAL);
         return (b0 & 1) != 0;
     }
 
     protected Entity findEntityOnPath(Vec3d start, Vec3d end)
     {
         Entity entity = null;
-        List<Entity> entities = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), BULLET_TARGETS);
+        List<Entity> entities = this.world.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D), BULLET_TARGETS::test);
         double prevDist = 0.0D;
 
         for (Entity target : entities)
@@ -299,15 +293,15 @@ public class EntityBullet extends Entity implements IProjectile
 
     public void setIsCritical(boolean critical)
     {
-        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
+        byte b0 = this.dataManager.get(CRITICAL);
 
         if (critical)
         {
-            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 | 1)));
+            this.dataManager.set(CRITICAL, (byte)(b0 | 1));
         }
         else
         {
-            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 & -2)));
+            this.dataManager.set(CRITICAL, (byte)(b0 & -2));
         }
     }
 }

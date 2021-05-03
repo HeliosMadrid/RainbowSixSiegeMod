@@ -34,6 +34,7 @@ public class RenderBullet extends Render<EntityBullet>
 
     @Override public void doRender(@Nonnull EntityBullet entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
+        System.out.println("RENDER");
         this.bindEntityTexture(entity);
 
         pushMatrix();
