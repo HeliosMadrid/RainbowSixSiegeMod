@@ -1,0 +1,7 @@
+{
+  "bullet_shoot": {
+    "category": "master",
+    "subtitle": "subtitle.bullet.shoot",
+    "sounds": [ "rainbowsixsiege:weapons/bullet_shoot" ]
+  }
+}

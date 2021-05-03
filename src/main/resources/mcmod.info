@@ -1,0 +1,16 @@
+[
+{
+  "modid": "rainbowsixsiege",
+  "name": "Rainbow Six Siege Mod",
+  "description": "mod qui simule une partie de R6 dans MC.",
+  "version": "${1.0}",
+  "mcversion": "${1.12}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Helios_38"],
+  "credits": "The Forge and FML guys",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

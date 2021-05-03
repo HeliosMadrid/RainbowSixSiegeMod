@@ -1,0 +1,12 @@
+rainbowsixsiege.keys.globalUI= Menu Rainbow Six Siege
+rainbowsixsiege.keys.reload= Recharger
+
+key.categories.rainbowsixsiege= Rainbow Six Siege
+
+itemGroup.tab.rainbowsixsiege= Rainbow Six Siege
+
+item.gun.name=Gun
+item.magazin.name= Magazin
+
+subtitle.BulletModel.socket= Douille de gun
+subtitle.BulletModel.shoot= Tir du gun
