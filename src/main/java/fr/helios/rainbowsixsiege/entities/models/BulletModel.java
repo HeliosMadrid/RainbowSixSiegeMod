@@ -14,7 +14,7 @@ public class BulletModel extends ModelBase
 
 		bb_main = new ModelRenderer(this);
 		bb_main.setRotationPoint(0.0F, 0.0F, 0.0F);
-		bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, 0.0F, 0.0F, 0.0F, 2, 1, 1, 0.0F, false));
+		bb_main.cubeList.add(new ModelBox(bb_main, 0, 0, 0.0F, 0.0F, 0.0F, 1, 1, 1, 0.0F, false));
 	}
 
 	public void render() {
