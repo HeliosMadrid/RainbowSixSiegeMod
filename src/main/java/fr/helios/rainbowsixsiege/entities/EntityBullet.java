@@ -29,7 +29,7 @@ import java.util.List;
 
 public class EntityBullet extends Entity implements IProjectile
 {
-    private static final Predicate<Entity> BULLET_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, input -> input.canBeCollidedWith());
+    private static final Predicate<Entity> BULLET_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, Entity::canBeCollidedWith);
     private static final DataParameter<Byte> CRITICAL = EntityDataManager.createKey(EntityBullet.class, DataSerializers.BYTE);
     public static final ResourceLocation bullet = new ResourceLocation(References.MODID, "entitybullet");
 

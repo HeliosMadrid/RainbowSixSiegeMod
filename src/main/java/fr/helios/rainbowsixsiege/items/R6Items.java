@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -41,7 +42,7 @@ public class R6Items
 
     private void registerItemModel(final ItemBase item) {
         ModelBakery.registerItemVariants(item, item.getRegistryName());
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Objects.requireNonNull(item.getRegistryName()), "inventory"));
     }
 
     public void registerItem(ItemBase item, String name) {

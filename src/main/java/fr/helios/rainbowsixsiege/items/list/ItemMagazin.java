@@ -6,11 +6,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 public class ItemMagazin extends ItemBase
 {
-    private int maxBullets;
+    private final int maxBullets;
 
-    String cb = "currentBullets";
+    final String cb = "currentBullets";
 
     public ItemMagazin()
     {
@@ -26,16 +28,16 @@ public class ItemMagazin extends ItemBase
     public int getCurrentBullets(ItemStack stack)
     {
         if(!stack.hasTagCompound()) setup(stack);
-        return stack.getTagCompound().getInteger(cb);
+        return Objects.requireNonNull(stack.getTagCompound()).getInteger(cb);
     }
 
     private void setup(ItemStack stack) {
         stack.setTagCompound(new NBTTagCompound());
-        stack.getTagCompound().setInteger(cb, maxBullets);
+        Objects.requireNonNull(stack.getTagCompound()).setInteger(cb, maxBullets);
     }
 
     public void useBullet(ItemStack stack) {
         if(!stack.hasTagCompound()) setup(stack);
-        stack.getTagCompound().setInteger(cb, stack.getTagCompound().getInteger(cb) - 1);
+        Objects.requireNonNull(stack.getTagCompound()).setInteger(cb, stack.getTagCompound().getInteger(cb) - 1);
     }
 }

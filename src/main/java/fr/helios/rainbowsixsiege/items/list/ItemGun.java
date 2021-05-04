@@ -12,6 +12,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 public class ItemGun extends ItemBase
 {
     private ItemStack magazin;
@@ -43,7 +45,7 @@ public class ItemGun extends ItemBase
 
                 world.playSound(null, shooter.posX +  shooter.motionX, shooter.posY + shooter.motionY, shooter.posZ + shooter.motionZ, R6Sounds.BULLET_SHOOT, SoundCategory.PLAYERS, 0.8F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 360 * 0.5F);
 
-                shooter.addStat(StatList.getObjectUseStats(this));
+                shooter.addStat(Objects.requireNonNull(StatList.getObjectUseStats(this)));
             }
         }
     }
@@ -76,15 +78,14 @@ public class ItemGun extends ItemBase
     public boolean hasValidMag(ItemStack stack) {
         if(!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
-            stack.getTagCompound().setBoolean("hasMag", false);
+            Objects.requireNonNull(stack.getTagCompound()).setBoolean("hasMag", false);
             return false;
         }
-        boolean hasMag = stack.getTagCompound().getBoolean("hasMag") && magazin != null && !magazin.isEmpty();
+        boolean hasMag = Objects.requireNonNull(stack.getTagCompound()).getBoolean("hasMag") && magazin != null && !magazin.isEmpty();
 
         if(hasMag) {
             ItemMagazin mag = (ItemMagazin)magazin.getItem();
-            if(mag.getCurrentBullets(magazin) > 0)
-                return true;
+            return mag.getCurrentBullets(magazin) > 0;
         } return false;
     }
 
@@ -99,7 +100,7 @@ public class ItemGun extends ItemBase
         {
             ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
             if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
-            stack.getTagCompound().setBoolean("hasMag", true);
+            Objects.requireNonNull(stack.getTagCompound()).setBoolean("hasMag", true);
         }
     }
 

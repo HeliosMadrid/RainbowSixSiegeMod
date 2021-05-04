@@ -3,7 +3,6 @@ package fr.helios.rainbowsixsiege.entities.render;
 import fr.helios.rainbowsixsiege.entities.EntityBullet;
 import fr.helios.rainbowsixsiege.entities.models.BulletModel;
 import fr.helios.rainbowsixsiege.utils.References;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
@@ -19,7 +18,7 @@ public class RenderBullet extends Render<EntityBullet>
     private static final ResourceLocation texture = new ResourceLocation(References.MODID, "textures/entity/bullets/bullet.png");
     public static final Factory factory = new Factory();
 
-    private BulletModel model;
+    private final BulletModel model;
 
     protected RenderBullet(RenderManager renderManager, BulletModel model)
     {
@@ -37,8 +36,6 @@ public class RenderBullet extends Render<EntityBullet>
         this.bindEntityTexture(entity);
 
         pushMatrix();
-        //System.out.println("X :" + x + "Y :" + y + " Z :" + z);
-//        System.out.println("PX :" + entity.motionX + " PY :" + entity.motionY + "PZ :" + entity.motionZ);
         color(1.0f, 1.0f, 1.0f, 1.0f);
         translate(x, y, z);
         //scale(10, 10 , 10);

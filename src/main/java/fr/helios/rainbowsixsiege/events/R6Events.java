@@ -6,16 +6,9 @@ import fr.helios.rainbowsixsiege.items.list.ItemGun;
 import fr.helios.rainbowsixsiege.network.R6Network;
 import fr.helios.rainbowsixsiege.network.packets.PlayerShootPacket;
 import fr.helios.rainbowsixsiege.utils.R6Keys;
-import fr.helios.rainbowsixsiege.utils.Vec3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -23,7 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 
 @Mod.EventBusSubscriber()
 public class R6Events
