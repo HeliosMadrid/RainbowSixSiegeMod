@@ -17,10 +17,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,13 +37,14 @@ public class EntityBullet extends Entity implements IProjectile
     private float damage;
     private final float knockbackStrength;
     private double speed;
+    private boolean inGround;
 
     public EntityBullet(World world)
     {
         super(world);
         this.damage = 30.0F;
         this.knockbackStrength = 1f;
-        this.speed = 50f;
+        this.speed = 100f;
         this.setSize(0.5F, 0.5F);
     }
 
@@ -120,7 +118,6 @@ public class EntityBullet extends Entity implements IProjectile
     @SideOnly(Side.CLIENT)
     @Override public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
-        System.out.println("UPDATE CLIENT");
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
@@ -140,9 +137,9 @@ public class EntityBullet extends Entity implements IProjectile
 
     @Override public void onUpdate()
     {
-        if(!world.isRemote)System.out.println("UPDATE SERVER");
         super.onUpdate();
 
+        if(inGround) setDead();
         if(!hasRot()) setRot(new Vec3(posX, posY, posZ));
 
         Vec3 pos = new Vec3(this.posX, this.posY, this.posZ);
@@ -161,7 +158,11 @@ public class EntityBullet extends Entity implements IProjectile
         }
 
         if(result != null && !ForgeEventFactory.onProjectileImpact(this, result)) {
-            onHit(result.entityHit);
+            if(result.entityHit != null) {
+                onEntityHit(result.entityHit);
+            } else {
+                this.inGround = true;
+            }
         }
 
         if (this.isInWater())
@@ -176,7 +177,7 @@ public class EntityBullet extends Entity implements IProjectile
         this.doBlockCollisions();
     }
 
-    protected void onHit(@Nonnull Entity victim) {
+    protected void onEntityHit(@Nonnull Entity victim) {
 
         int amountDamage = (int)this.damage;
         DamageSource damagesource;
