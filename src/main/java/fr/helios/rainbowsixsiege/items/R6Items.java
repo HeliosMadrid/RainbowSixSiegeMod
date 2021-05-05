@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import fr.helios.rainbowsixsiege.RainbowSixSiege;
 import fr.helios.rainbowsixsiege.items.list.ItemBase;
 import fr.helios.rainbowsixsiege.items.list.ItemGun;
+import fr.helios.rainbowsixsiege.items.list.ItemMagazin;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -22,12 +23,14 @@ public class R6Items
 
     /**Déclarations des items**/
         public ItemGun gun;
+        public ItemMagazin magazin;
     /**fin**/
 
     private final Set<ItemBase> items = Sets.newHashSet();
 
     public void initItems() {
         gun = new ItemGun();
+        magazin = new ItemMagazin();
     }
 
     @SubscribeEvent

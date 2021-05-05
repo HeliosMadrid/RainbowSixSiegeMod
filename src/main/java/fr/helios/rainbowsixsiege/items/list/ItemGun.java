@@ -5,7 +5,6 @@ import fr.helios.rainbowsixsiege.items.R6Items;
 import fr.helios.rainbowsixsiege.utils.R6Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.StatList;
@@ -29,12 +28,13 @@ public class ItemGun extends ItemBase
     {
         ItemStack stack = shooter.getHeldItem(EnumHand.MAIN_HAND);
 
-        if(stack.getItem() instanceof ItemGun)
+        if(stack.getItem() instanceof ItemGun && hasMag(stack))
         {
             if(!world.isRemote)
             {
                 EntityBullet entityBullet = new EntityBullet(world, shooter);
                 entityBullet.shoot(shooter);
+                ItemMagazin.useBullet(stack);
 
                 world.spawnEntity(entityBullet);
             }
@@ -43,6 +43,61 @@ public class ItemGun extends ItemBase
 
             shooter.addStat(Objects.requireNonNull(StatList.getObjectUseStats(this)));
         }
+    }
+
+    private boolean hasMag(ItemStack stack) {
+        tag(stack);
+        System.out.println("HASMAG :" + stack.getTagCompound().getBoolean("hasMag") + " , BULLETS :" + stack.getTagCompound().getInteger("bullets"));
+        if(stack.getTagCompound().hasKey("hasMag") && stack.getTagCompound().getBoolean("hasMag")) {
+            if(stack.getTagCompound().hasKey("bullets") && stack.getTagCompound().getInteger("bullets") > 0)
+                return true;
+        }
+        return false;
+    }
+
+    private ItemStack findMag(EntityPlayer player) {
+        for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            if(player.inventory.getStackInSlot(i).getItem() instanceof ItemMagazin && ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) > 0){
+                System.out.println("FINDMAGAZIN");
+                ItemStack mag = player.inventory.getStackInSlot(i);
+                player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+                return mag;
+            }
+        } return ItemStack.EMPTY;
+    }
+
+    private void decharge(EntityPlayer player, ItemStack gun) {
+        ItemStack mag = new ItemStack(R6Items.INSTANCE.magazin);
+        ItemMagazin.setBullets(mag, gun.getTagCompound().getInteger("bullets"));
+        gun.getTagCompound().setBoolean("hasMag", false);
+        gun.getTagCompound().setInteger("bullets", 0);
+        for(int i = 0; i < player.inventory.getSizeInventory() - 5; i++){
+            if(player.inventory.getStackInSlot(i).isEmpty()){
+                System.out.println(player.inventory.getSizeInventory());
+                player.inventory.setInventorySlotContents(i, mag);
+                return;
+            }
+        }
+        player.dropItem(mag, true);
+    }
+
+    public void reload(EntityPlayer player) {
+        ItemStack gun = player.getHeldItem(EnumHand.MAIN_HAND);
+        tag(gun);
+        if(gun.getTagCompound().hasKey("hasMag") && gun.getTagCompound().getBoolean("hasMag")) {
+            decharge(player, gun);
+        } else {
+            ItemStack mag = findMag(player);
+            if(mag != null && !mag.isEmpty() && ItemMagazin.getCurrentBullets(mag) > 0){
+                System.out.println("RELOAD");
+                gun.getTagCompound().setBoolean("hasMag", true);
+                gun.getTagCompound().setInteger("bullets", ItemMagazin.getCurrentBullets(mag));
+            }
+        }
+    }
+
+    private void tag(ItemStack stack) {
+        if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
     }
 
     @Override public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)

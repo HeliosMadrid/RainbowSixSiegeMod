@@ -27,6 +27,7 @@ public class ReloadGunPacket extends R6PacketBase
             if(player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun)
             {
                 ItemGun gun = (ItemGun)player.getHeldItem(EnumHand.MAIN_HAND).getItem();
+                gun.reload(player);
             }
         }
     }
