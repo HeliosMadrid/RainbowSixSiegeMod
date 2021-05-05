@@ -27,9 +27,7 @@ public abstract class R6PacketBase implements IMessage
 
         @Override public IMessage onMessage(PACKET message, MessageContext ctx)
         {
-            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-                handle(message, ctx);
-            });
+            FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
             return null;
         }
 

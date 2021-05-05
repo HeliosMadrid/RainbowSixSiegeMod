@@ -23,7 +23,10 @@ public class GlobalUI extends GuiScreen
 
     static final Map<EntityPlayerSP, GlobalUI> globalsUi = new HashMap<>();
 
-    int xSize = 247, ySize = 165, x, y;
+    final int xSize = 247;
+    final int ySize = 165;
+    int x;
+    int y;
 
     final EntityPlayerSP player;
 
@@ -45,7 +48,7 @@ public class GlobalUI extends GuiScreen
     {
         drawDefaultBackground();
         drawImages();
-        drawPlayer(x + 135, y + 149, 50, Minecraft.getMinecraft().player, (x + 135) - mouseX, (y + 73) - mouseY);
+        drawPlayer(x + 135, y + 149, Minecraft.getMinecraft().player, (x + 135) - mouseX, (y + 73) - mouseY);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -54,11 +57,11 @@ public class GlobalUI extends GuiScreen
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
     }
 
-    private void drawPlayer(float x, float y, float scale, EntityPlayerSP player, float mouseX, float mouseY) {
+    private void drawPlayer(float x, float y, EntityPlayerSP player, float mouseX, float mouseY) {
         enableColorMaterial();
         pushMatrix();
         translate(x, y, 50.0f);
-        scale(-scale, scale, scale);
+        scale(-(float)50, (float)50, (float)50);
         rotate(180.0f, 0.0f, 0.0f, 1.0f);
 
         float pOffset = player.renderYawOffset,
@@ -72,11 +75,11 @@ public class GlobalUI extends GuiScreen
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 
-        GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(-((float)Math.atan(mouseY / 40.0F)) * 20.0F, 1.0F, 0.0F, 0.0F);
 
-        player.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 20.0F;
-        player.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
-        player.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F;
+        player.renderYawOffset = (float)Math.atan(mouseX / 40.0F) * 20.0F;
+        player.rotationYaw = (float)Math.atan(mouseX / 40.0F) * 40.0F;
+        player.rotationPitch = -((float)Math.atan(mouseY / 40.0F)) * 20.0F;
         player.rotationYawHead = player.rotationYaw;
         player.prevRotationYawHead = player.rotationYaw;
 

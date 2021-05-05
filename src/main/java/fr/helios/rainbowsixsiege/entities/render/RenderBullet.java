@@ -3,12 +3,12 @@ package fr.helios.rainbowsixsiege.entities.render;
 import fr.helios.rainbowsixsiege.entities.EntityBullet;
 import fr.helios.rainbowsixsiege.entities.models.BulletModel;
 import fr.helios.rainbowsixsiege.utils.References;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
@@ -18,7 +18,7 @@ public class RenderBullet extends Render<EntityBullet>
     private static final ResourceLocation texture = new ResourceLocation(References.MODID, "textures/entity/bullets/bullet.png");
     public static final Factory factory = new Factory();
 
-    private BulletModel model;
+    private final BulletModel model;
 
     protected RenderBullet(RenderManager renderManager, BulletModel model)
     {
@@ -26,21 +26,19 @@ public class RenderBullet extends Render<EntityBullet>
         this.model = model;
     }
 
-    @Nullable @Override protected ResourceLocation getEntityTexture(EntityBullet entity)
+    @Nullable @Override protected ResourceLocation getEntityTexture(@Nonnull EntityBullet entity)
     {
         return texture;
     }
 
-    @Override public void doRender(EntityBullet entity, double x, double y, double z, float entityYaw, float partialTicks)
+    @Override public void doRender(@Nonnull EntityBullet entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         this.bindEntityTexture(entity);
 
         pushMatrix();
-        //System.out.println("X :" + x + "Y :" + y + " Z :" + z);
-//        System.out.println("PX :" + entity.motionX + " PY :" + entity.motionY + "PZ :" + entity.motionZ);
         color(1.0f, 1.0f, 1.0f, 1.0f);
         translate(x, y, z);
-        scale(10, 10 , 10);
+        //scale(10, 10 , 10);
         enableRescaleNormal();
 
         if(renderOutlines)

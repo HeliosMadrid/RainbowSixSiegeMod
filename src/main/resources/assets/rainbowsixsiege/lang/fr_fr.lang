@@ -7,6 +7,7 @@ itemGroup.tab.rainbowsixsiege= Rainbow Six Siege
 
 item.gun.name=Gun
 item.magazin.name= Magazin
+item.rpg.name= RPG
 
 subtitle.BulletModel.socket= Douille de gun
 subtitle.BulletModel.shoot= Tir du gun

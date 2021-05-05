@@ -1,6 +1,6 @@
 package fr.helios.rainbowsixsiege.network.packets;
 
-import fr.helios.rainbowsixsiege.items.list.ItemGun;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -25,9 +25,9 @@ public class PlayerShootPacket extends R6PacketBase
         {
             EntityPlayer player = ctx.getServerHandler().player;
             ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
-            if(stack.getItem() instanceof ItemGun)
+            if(stack.getItem() instanceof ItemWeapon)
             {
-                ItemGun gun = (ItemGun)stack.getItem();
+                ItemWeapon gun = (ItemWeapon)stack.getItem();
                 gun.onPlayerShoot(player.world, player);
             }
         }

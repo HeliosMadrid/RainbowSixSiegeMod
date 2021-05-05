@@ -14,6 +14,6 @@ public class R6Tab extends CreativeTabs
 
     @Override public ItemStack createIcon()
     {
-        return new ItemStack( R6Items.INSTANCE.gun);
+        return new ItemStack( R6Items.INSTANCE.magazin);
     }
 }
