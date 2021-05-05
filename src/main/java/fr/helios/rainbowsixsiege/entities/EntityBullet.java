@@ -189,7 +189,6 @@ public class EntityBullet extends Entity implements IProjectile
 
         if (victim.attackEntityFrom(damagesource, (float)amountDamage))
         {
-            System.out.println("HIT");
             if (victim instanceof EntityLivingBase)
             {
                 EntityLivingBase livingVictim = (EntityLivingBase)victim;
