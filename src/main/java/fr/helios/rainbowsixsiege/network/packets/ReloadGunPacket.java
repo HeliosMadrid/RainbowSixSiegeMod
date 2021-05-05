@@ -1,7 +1,6 @@
 package fr.helios.rainbowsixsiege.network.packets;
 
-import fr.helios.rainbowsixsiege.items.list.ItemGun;
-import net.minecraft.entity.player.EntityPlayer;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumHand;
@@ -24,9 +23,9 @@ public class ReloadGunPacket extends R6PacketBase
         @Override protected void handle(ReloadGunPacket buffer, MessageContext ctx)
         {
             EntityPlayerMP player = ctx.getServerHandler().player;
-            if(player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun)
+            if(player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemWeapon)
             {
-                ItemGun gun = (ItemGun)player.getHeldItem(EnumHand.MAIN_HAND).getItem();
+                ItemWeapon gun = (ItemWeapon)player.getHeldItem(EnumHand.MAIN_HAND).getItem();
                 gun.reload(player);
             }
         }

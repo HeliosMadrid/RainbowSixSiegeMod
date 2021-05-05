@@ -3,7 +3,8 @@ package fr.helios.rainbowsixsiege.items;
 import com.google.common.collect.Sets;
 import fr.helios.rainbowsixsiege.RainbowSixSiege;
 import fr.helios.rainbowsixsiege.items.list.ItemBase;
-import fr.helios.rainbowsixsiege.items.list.ItemGun;
+import fr.helios.rainbowsixsiege.items.list.ItemExplosiveThrower;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
 import fr.helios.rainbowsixsiege.items.list.ItemMagazin;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -22,15 +23,15 @@ public class R6Items
     public static final R6Items INSTANCE = new R6Items();
 
     /**Déclarations des items**/
-        public ItemGun gun;
         public ItemMagazin magazin;
+        public ItemExplosiveThrower rpg;
     /**fin**/
 
     private final Set<ItemBase> items = Sets.newHashSet();
 
     public void initItems() {
-        gun = new ItemGun();
         magazin = new ItemMagazin();
+        rpg = new ItemExplosiveThrower();
     }
 
     @SubscribeEvent

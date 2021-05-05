@@ -2,7 +2,7 @@ package fr.helios.rainbowsixsiege.events;
 
 import fr.helios.rainbowsixsiege.items.R6Items;
 import fr.helios.rainbowsixsiege.items.list.ItemBase;
-import fr.helios.rainbowsixsiege.items.list.ItemGun;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
 import fr.helios.rainbowsixsiege.network.R6Network;
 import fr.helios.rainbowsixsiege.network.packets.PlayerShootPacket;
 import fr.helios.rainbowsixsiege.utils.R6Keys;
@@ -27,7 +27,7 @@ public class R6Events
 
     @SubscribeEvent
     public void playerShoot(PlayerInteractEvent.LeftClickBlock event) {
-        if(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun){
+        if(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemWeapon){
             event.setCanceled(true);
             R6Network.NETWORK.sendToServer(new PlayerShootPacket());
         }
@@ -35,7 +35,7 @@ public class R6Events
 
     @SubscribeEvent
     public void leftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
-        if(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun){
+        if(event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemWeapon){
             R6Network.NETWORK.sendToServer(new PlayerShootPacket());
         }
     }
@@ -43,7 +43,7 @@ public class R6Events
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onMouseDown(InputEvent.MouseInputEvent event) {
-            if(Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemGun){
+            if(Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemWeapon){
                 if(Minecraft.getMinecraft().gameSettings.keyBindAttack.isPressed()) {
                     R6Network.NETWORK.sendToServer(new PlayerShootPacket());
                 }

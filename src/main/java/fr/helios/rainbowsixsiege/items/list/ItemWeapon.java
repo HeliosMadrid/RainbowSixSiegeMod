@@ -15,24 +15,25 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
-public class ItemGun extends ItemBase
+public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
 {
-    public ItemGun()
-    {
-        super("gun");
+    protected ItemWeapon(String name) {
+        super(name);
         setMaxStackSize(1);
         setMaxDamage(500);
     }
+
+    protected abstract ENTITY createEntity(World world, EntityPlayer shooter);
 
     public void onPlayerShoot(World world, EntityPlayer shooter)
     {
         ItemStack stack = shooter.getHeldItem(EnumHand.MAIN_HAND);
 
-        if(stack.getItem() instanceof ItemGun && hasMag(stack))
+        if(stack.getItem() instanceof ItemWeapon && hasMag(stack))
         {
             if(!world.isRemote)
             {
-                EntityBullet entityBullet = new EntityBullet(world, shooter);
+                ENTITY entityBullet = createEntity(world, shooter);
                 entityBullet.shoot(shooter);
                 ItemMagazin.useBullet(stack);
 
@@ -71,7 +72,7 @@ public class ItemGun extends ItemBase
         ItemMagazin.setBullets(mag, gun.getTagCompound().getInteger("bullets"));
         gun.getTagCompound().setBoolean("hasMag", false);
         gun.getTagCompound().setInteger("bullets", 0);
-        for(int i = 0; i < player.inventory.getSizeInventory() - 5; i++){
+        for(int i = 0; i < player.inventory.getSizeInventory() - 5; i++) {
             if(player.inventory.getStackInSlot(i).isEmpty()){
                 System.out.println(player.inventory.getSizeInventory());
                 player.inventory.setInventorySlotContents(i, mag);
