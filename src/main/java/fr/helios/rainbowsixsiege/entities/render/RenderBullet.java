@@ -6,6 +6,7 @@ import fr.helios.rainbowsixsiege.utils.References;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 import javax.annotation.Nonnull;
@@ -38,7 +39,6 @@ public class RenderBullet extends Render<EntityBullet>
         pushMatrix();
         color(1.0f, 1.0f, 1.0f, 1.0f);
         translate(x, y, z);
-        //scale(10, 10 , 10);
         enableRescaleNormal();
 
         if(renderOutlines)

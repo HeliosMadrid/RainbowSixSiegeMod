@@ -1,0 +1,8 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "rainbowsixsiege:magazin": {
+      "rocket": {"model":  "rainbowsixsiege:item/magazin/rocket"}
+    }
+  }
+}

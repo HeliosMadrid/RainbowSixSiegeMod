@@ -3,9 +3,10 @@ package fr.helios.rainbowsixsiege.items;
 import com.google.common.collect.Sets;
 import fr.helios.rainbowsixsiege.RainbowSixSiege;
 import fr.helios.rainbowsixsiege.items.list.ItemBase;
-import fr.helios.rainbowsixsiege.items.list.ItemExplosiveThrower;
-import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
 import fr.helios.rainbowsixsiege.items.list.ItemMagazin;
+import fr.helios.rainbowsixsiege.items.list.ItemVariant;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
+import fr.helios.rainbowsixsiege.utils.interfaces.IEnumVariant;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -24,20 +25,30 @@ public class R6Items
 
     /**Déclarations des items**/
         public ItemMagazin magazin;
-        public ItemExplosiveThrower rpg;
+        public ItemWeapon weapon;
     /**fin**/
 
     private final Set<ItemBase> items = Sets.newHashSet();
 
     public void initItems() {
         magazin = new ItemMagazin();
-        rpg = new ItemExplosiveThrower();
+        weapon = new ItemWeapon();
     }
 
     @SubscribeEvent
     public void registerItemsModels(ModelRegistryEvent event) {
         for(ItemBase item : items) {
-            registerItemModel(item);
+            if(item instanceof ItemVariant) {
+                IEnumVariant[] values = ((ItemVariant)item).getMetalookup();
+                if(values != null)
+                    registerVariantsItemsModels((ItemVariant)item, values);
+            } else registerItemModel(item);
+        }
+    }
+
+    private void registerVariantsItemsModels(final ItemVariant item, final IEnumVariant[] values){
+        for(final IEnumVariant value : values) {
+            ModelLoader.setCustomModelResourceLocation(item, value.getMetadata(), new ModelResourceLocation(item.getRegistryName(), value.getVar(item)));
         }
     }
 

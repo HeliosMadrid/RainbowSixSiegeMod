@@ -2,6 +2,8 @@ package fr.helios.rainbowsixsiege.entities;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
+import fr.helios.rainbowsixsiege.items.variants.EnumWeapon;
 import fr.helios.rainbowsixsiege.utils.References;
 import fr.helios.rainbowsixsiege.utils.Vec3;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -54,7 +56,7 @@ public class EntityBullet extends Entity implements IProjectile
         this.setPosition(x, y, z);
     }
 
-    public EntityBullet(World world, EntityLivingBase shooter)
+    public EntityBullet(World world, EntityLivingBase shooter, EnumWeapon weapon)
     {
         this(world, shooter.posX, shooter.posY + (double)shooter.getEyeHeight(), shooter.posZ);
         this.shooter = shooter;
