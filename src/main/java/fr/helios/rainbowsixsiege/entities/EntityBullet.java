@@ -2,10 +2,14 @@ package fr.helios.rainbowsixsiege.entities;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
+import fr.helios.rainbowsixsiege.RainbowSixSiege;
+import fr.helios.rainbowsixsiege.entities.render.RenderBullet;
 import fr.helios.rainbowsixsiege.items.variants.EnumWeapon;
 import fr.helios.rainbowsixsiege.utils.References;
 import fr.helios.rainbowsixsiege.utils.Vec3;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,9 +23,13 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,11 +37,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EntityBullet extends Entity implements IProjectile
+public abstract class EntityBullet extends Entity implements IProjectile
 {
     private static final Predicate<Entity> BULLET_TARGETS = Predicates.and(EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, Entity::canBeCollidedWith);
     private static final DataParameter<Byte> CRITICAL = EntityDataManager.createKey(EntityBullet.class, DataSerializers.BYTE);
-    public static final ResourceLocation bullet = new ResourceLocation(References.MODID, "entitybullet");
 
     private Entity shooter;
     private float damage;
@@ -44,9 +51,7 @@ public class EntityBullet extends Entity implements IProjectile
     public EntityBullet(World world)
     {
         super(world);
-        this.damage = 30.0F;
         this.knockbackStrength = 1f;
-        this.speed = 100f;
         this.setSize(0.5F, 0.5F);
     }
 
@@ -56,10 +61,60 @@ public class EntityBullet extends Entity implements IProjectile
         this.setPosition(x, y, z);
     }
 
-    public EntityBullet(World world, EntityLivingBase shooter, EnumWeapon weapon)
+    protected EntityBullet(World world, EntityLivingBase shooter, int damage, int speed)
     {
         this(world, shooter.posX, shooter.posY + (double)shooter.getEyeHeight(), shooter.posZ);
         this.shooter = shooter;
+        this.damage = damage;
+        this.speed = speed;
+    }
+
+    public abstract Render<? extends EntityBullet> createRender(RenderManager manager);
+
+    public void hitEffect(RayTraceResult result)
+    {
+
+    }
+
+    public static class EntityRocket extends EntityBullet {
+        public static final ResourceLocation bullet = new ResourceLocation(References.MODID, "entityrocket");
+        public EntityRocket(World world)
+        {
+            super(world);
+        }
+
+        public EntityRocket(World world, EntityLivingBase shooter)
+        {
+            super(world, shooter, 5, 5);
+        }
+
+        @Override public Render<? extends EntityBullet> createRender(RenderManager manager)
+        {
+            return new RenderBullet.RenderRocket(manager);
+        }
+
+        @Override public void hitEffect(RayTraceResult result)
+        {
+            this.world.createExplosion(this, result.hitVec.x, result.hitVec.y, result.hitVec.z, 10f, true);
+        }
+    }
+
+    public static class EntityBulletBase extends EntityBullet {
+        public static final ResourceLocation bullet = new ResourceLocation(References.MODID, "entitybullet");
+        public EntityBulletBase(World world)
+        {
+            super(world);
+        }
+
+        public EntityBulletBase(World world, EntityLivingBase shooter)
+        {
+            super(world, shooter, 30, 100);
+        }
+
+        @Override public Render<? extends EntityBullet> createRender(RenderManager manager)
+        {
+            return new RenderBullet.RenderBulletBase(manager);
+        }
     }
 
     @Override
@@ -160,6 +215,7 @@ public class EntityBullet extends Entity implements IProjectile
         }
 
         if(result != null && !ForgeEventFactory.onProjectileImpact(this, result)) {
+            this.hitEffect(result);
             if(result.entityHit != null) {
                 onEntityHit(result.entityHit);
             } else {
@@ -305,5 +361,11 @@ public class EntityBullet extends Entity implements IProjectile
         {
             this.dataManager.set(CRITICAL, (byte)(b0 & -2));
         }
+    }
+
+    public static int registerSubsEntities(int id) {
+        EntityRegistry.registerModEntity(EntityRocket.bullet, EntityRocket.class, "rocket", id++, RainbowSixSiege.instance, Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 1, false);
+        EntityRegistry.registerModEntity(EntityBulletBase.bullet, EntityBulletBase.class, "bullet", id++, RainbowSixSiege.instance, Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16, 1, false);
+        return id;
     }
 }

@@ -4,8 +4,6 @@ import fr.helios.rainbowsixsiege.items.list.ItemVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 
-import java.util.Map;
-
 public interface IEnumVariant extends IStringSerializable
 {
     int getMetadata();

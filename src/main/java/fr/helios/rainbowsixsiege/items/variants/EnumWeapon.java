@@ -15,11 +15,17 @@ import java.util.Map;
 
 public enum EnumWeapon implements IEnumVariant
 {
-    RPG(0, "rpg", R6Sounds.BULLET_SHOOT);
+    RPG(0, "rpg", R6Sounds.BULLET_SHOOT, 5, 5, (World world, EntityPlayer player) -> {
+        return new EntityBullet.EntityRocket(world, player);
+    }), DESERT_EAGLE(1, "desert_eagle", R6Sounds.BULLET_SHOOT, 30, 100, (World world, EntityPlayer player) -> {
+        return new EntityBullet.EntityBulletBase(world, player);
+});
 
-    private final int metadata;
+    private final int metadata, damage, speed;
     private final String name;
     private final SoundEvent shootSound;
+
+    private final bulletBuilder bulletBuilder;
 
     private static final Map<Integer, EnumWeapon> META_LOOKUP = Maps.newHashMap();
 
@@ -28,16 +34,19 @@ public enum EnumWeapon implements IEnumVariant
             META_LOOKUP.put(value.metadata, value);
     }
 
-    EnumWeapon(int metadata, String name, SoundEvent shootSound)
+    EnumWeapon(int metadata, String name, SoundEvent shootSound, int damage, int speed, bulletBuilder bulletBuilder)
     {
         this.metadata = metadata;
         this.name = name;
         this.shootSound = shootSound;
+        this.damage = damage;
+        this.speed = speed;
+        this.bulletBuilder = bulletBuilder;
     }
 
-    public EntityBullet createBullet(World world, EntityPlayer player, ItemStack weapon) {
-
-        return new EntityBullet(world, player, byMetadata(weapon.getMetadata()));
+    public EnumWeapon.bulletBuilder getBulletBuilder()
+    {
+        return bulletBuilder;
     }
 
     public SoundEvent getShootSound()
@@ -68,5 +77,10 @@ public enum EnumWeapon implements IEnumVariant
     @Override public String getName()
     {
         return this.name;
+    }
+
+    @FunctionalInterface
+    public interface bulletBuilder {
+        EntityBullet build(World world, EntityPlayer shooter);
     }
 }

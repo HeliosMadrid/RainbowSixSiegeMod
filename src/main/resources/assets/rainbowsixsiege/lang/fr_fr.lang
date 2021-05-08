@@ -6,7 +6,10 @@ key.categories.rainbowsixsiege= Rainbow Six Siege
 itemGroup.tab.rainbowsixsiege= Rainbow Six Siege
 
 item.magazin.rocket.name= Rocket
+item.magazin.cal.50_AE.name= Cal.50 AE
+
 item.weapon.rpg.name= RPG
+item.weapon.desert_eagle.name=Desert Eagle
 
 subtitle.BulletModel.socket= Douille de gun
 subtitle.BulletModel.shoot= Tir du gun

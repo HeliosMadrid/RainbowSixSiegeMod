@@ -10,7 +10,7 @@ import java.util.Map;
 
 public enum EnumMagazin implements IEnumVariant
 {
-    ROCKET(0, "rocket", 1);
+    ROCKET(0, "rocket", 1), CAL_50_AE(1, "cal.50_AE", 7);
 
     private final int metadata;
     private final String name;

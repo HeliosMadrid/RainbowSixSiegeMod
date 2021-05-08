@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 
 public class R6Tab extends CreativeTabs
 {
-
     public R6Tab(String label)
     {
         super(label);
@@ -15,5 +14,5 @@ public class R6Tab extends CreativeTabs
     @Override public ItemStack createIcon()
     {
         return new ItemStack( R6Items.INSTANCE.magazin);
-    }
+    }   
 }

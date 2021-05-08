@@ -30,7 +30,7 @@ public class ItemWeapon extends ItemVariant<EnumWeapon>
         {
             if(!world.isRemote)
             {
-                EntityBullet entityBullet = EnumWeapon.byMetadata(stack.getMetadata()).createBullet(world, shooter, stack);
+                EntityBullet entityBullet = EnumWeapon.byMetadata(stack.getMetadata()).getBulletBuilder().build(world, shooter);
                 entityBullet.shoot(shooter);
                 ItemMagazin.useBullet(stack);
 
@@ -52,24 +52,26 @@ public class ItemWeapon extends ItemVariant<EnumWeapon>
         return false;
     }
 
-    private ItemStack findMag(EntityPlayer player) {
+    private ItemStack findMag(EntityPlayer player, int metadata) {
+        ItemStack mag = ItemStack.EMPTY;
+        int bullets = 0, index = 0;
         for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            if(player.inventory.getStackInSlot(i).getItem() instanceof ItemMagazin && ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) > 0){
-                ItemStack mag = player.inventory.getStackInSlot(i);
-                player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                return mag;
+            if(player.inventory.getStackInSlot(i).getItem() instanceof ItemMagazin && ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) > 0 && player.inventory.getStackInSlot(i).getMetadata() == metadata && (bullets < ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) || bullets == 0)){
+                mag = player.inventory.getStackInSlot(i);
+                index = i;
             }
-        } return ItemStack.EMPTY;
+        }
+        if(!mag.isEmpty()) player.inventory.setInventorySlotContents(index, new ItemStack(player.inventory.getStackInSlot(index).getItem(), player.inventory.getStackInSlot(index).getCount() - 1, player.inventory.getStackInSlot(index).getMetadata()));
+        return mag;
     }
 
     private void decharge(EntityPlayer player, ItemStack gun) {
-        ItemStack mag = new ItemStack(R6Items.INSTANCE.magazin);
+        ItemStack mag = new ItemStack(R6Items.INSTANCE.magazin, 1, gun.getMetadata());
         ItemMagazin.setBullets(mag, gun.getTagCompound().getInteger("bullets"));
         gun.getTagCompound().setBoolean("hasMag", false);
         gun.getTagCompound().setInteger("bullets", 0);
         for(int i = 0; i < player.inventory.getSizeInventory() - 5; i++) {
             if(player.inventory.getStackInSlot(i).isEmpty()){
-                System.out.println(player.inventory.getSizeInventory());
                 player.inventory.setInventorySlotContents(i, mag);
                 return;
             }
@@ -82,10 +84,10 @@ public class ItemWeapon extends ItemVariant<EnumWeapon>
         tag(gun);
         if(gun.getTagCompound().hasKey("hasMag") && gun.getTagCompound().getBoolean("hasMag")) {
             decharge(player, gun);
+            reload(player);
         } else {
-            ItemStack mag = findMag(player);
+            ItemStack mag = findMag(player, gun.getMetadata());
             if(mag != null && !mag.isEmpty() && ItemMagazin.getCurrentBullets(mag) > 0){
-                System.out.println("RELOAD");
                 gun.getTagCompound().setBoolean("hasMag", true);
                 gun.getTagCompound().setInteger("bullets", ItemMagazin.getCurrentBullets(mag));
             }
