@@ -1,21 +1,20 @@
 package fr.helios.rainbowsixsiege.items.list;
 
+import fr.helios.rainbowsixsiege.items.variants.EnumMagazin;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ItemMagazin extends ItemBase
+public class ItemMagazin extends ItemVariant<EnumMagazin>
 {
-    private static final int maxBullets = 30;
-
     public ItemMagazin()
     {
-        super("magazin");
+        super(EnumMagazin.values(), "magazin");
     }
 
     public static int getCurrentBullets(ItemStack stack) {
         tag(stack);
         if(!stack.getTagCompound().hasKey("bullets"))
-            stack.getTagCompound().setInteger("bullets", maxBullets);
+            stack.getTagCompound().setInteger("bullets", EnumMagazin.byMetadata(stack.getMetadata()).getMaxBullets());
         return stack.getTagCompound().getInteger("bullets");
     }
 

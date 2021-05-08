@@ -1,0 +1,9 @@
+{
+    "forge_marker": 1,
+    "variants": {
+        "rainbowsixsiege:weapon": {
+            "rpg": {"model": "rainbowsixsiege:item/weapon/rpg"},
+            "desert_eagle": {"model":  "rainbowsixsiege:item/weapon/desert_eagle"}
+        }
+    }
+}

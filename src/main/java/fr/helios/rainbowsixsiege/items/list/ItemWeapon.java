@@ -2,7 +2,7 @@ package fr.helios.rainbowsixsiege.items.list;
 
 import fr.helios.rainbowsixsiege.entities.EntityBullet;
 import fr.helios.rainbowsixsiege.items.R6Items;
-import fr.helios.rainbowsixsiege.utils.R6Sounds;
+import fr.helios.rainbowsixsiege.items.variants.EnumWeapon;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,15 +15,12 @@ import net.minecraft.world.World;
 
 import java.util.Objects;
 
-public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
+public class ItemWeapon extends ItemVariant<EnumWeapon>
 {
-    protected ItemWeapon(String name) {
-        super(name);
+    public ItemWeapon() {
+        super(EnumWeapon.values(), "weapon");
         setMaxStackSize(1);
-        setMaxDamage(500);
     }
-
-    protected abstract ENTITY createEntity(World world, EntityPlayer shooter);
 
     public void onPlayerShoot(World world, EntityPlayer shooter)
     {
@@ -33,14 +30,14 @@ public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
         {
             if(!world.isRemote)
             {
-                ENTITY entityBullet = createEntity(world, shooter);
+                EntityBullet entityBullet = EnumWeapon.byMetadata(stack.getMetadata()).getBulletBuilder().build(world, shooter);
                 entityBullet.shoot(shooter);
                 ItemMagazin.useBullet(stack);
 
                 world.spawnEntity(entityBullet);
             }
 
-            world.playSound(null, shooter.posX +  shooter.motionX, shooter.posY + shooter.motionY, shooter.posZ + shooter.motionZ, R6Sounds.BULLET_SHOOT, SoundCategory.PLAYERS, 0.8F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 360 * 0.5F);
+            world.playSound(null, shooter.posX +  shooter.motionX, shooter.posY + shooter.motionY, shooter.posZ + shooter.motionZ, EnumWeapon.byMetadata(stack.getMetadata()).getShootSound(), SoundCategory.PLAYERS, 0.8F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + 360 * 0.5F);
 
             shooter.addStat(Objects.requireNonNull(StatList.getObjectUseStats(this)));
         }
@@ -48,7 +45,6 @@ public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
 
     private boolean hasMag(ItemStack stack) {
         tag(stack);
-        System.out.println("HASMAG :" + stack.getTagCompound().getBoolean("hasMag") + " , BULLETS :" + stack.getTagCompound().getInteger("bullets"));
         if(stack.getTagCompound().hasKey("hasMag") && stack.getTagCompound().getBoolean("hasMag")) {
             if(stack.getTagCompound().hasKey("bullets") && stack.getTagCompound().getInteger("bullets") > 0)
                 return true;
@@ -56,25 +52,26 @@ public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
         return false;
     }
 
-    private ItemStack findMag(EntityPlayer player) {
+    private ItemStack findMag(EntityPlayer player, int metadata) {
+        ItemStack mag = ItemStack.EMPTY;
+        int bullets = 0, index = 0;
         for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-            if(player.inventory.getStackInSlot(i).getItem() instanceof ItemMagazin && ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) > 0){
-                System.out.println("FINDMAGAZIN");
-                ItemStack mag = player.inventory.getStackInSlot(i);
-                player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-                return mag;
+            if(player.inventory.getStackInSlot(i).getItem() instanceof ItemMagazin && ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) > 0 && player.inventory.getStackInSlot(i).getMetadata() == metadata && (bullets < ItemMagazin.getCurrentBullets(player.inventory.getStackInSlot(i)) || bullets == 0)){
+                mag = player.inventory.getStackInSlot(i);
+                index = i;
             }
-        } return ItemStack.EMPTY;
+        }
+        if(!mag.isEmpty()) player.inventory.setInventorySlotContents(index, new ItemStack(player.inventory.getStackInSlot(index).getItem(), player.inventory.getStackInSlot(index).getCount() - 1, player.inventory.getStackInSlot(index).getMetadata()));
+        return mag;
     }
 
     private void decharge(EntityPlayer player, ItemStack gun) {
-        ItemStack mag = new ItemStack(R6Items.INSTANCE.magazin);
+        ItemStack mag = new ItemStack(R6Items.INSTANCE.magazin, 1, gun.getMetadata());
         ItemMagazin.setBullets(mag, gun.getTagCompound().getInteger("bullets"));
         gun.getTagCompound().setBoolean("hasMag", false);
         gun.getTagCompound().setInteger("bullets", 0);
         for(int i = 0; i < player.inventory.getSizeInventory() - 5; i++) {
             if(player.inventory.getStackInSlot(i).isEmpty()){
-                System.out.println(player.inventory.getSizeInventory());
                 player.inventory.setInventorySlotContents(i, mag);
                 return;
             }
@@ -87,10 +84,10 @@ public abstract class ItemWeapon<ENTITY extends EntityBullet> extends ItemBase
         tag(gun);
         if(gun.getTagCompound().hasKey("hasMag") && gun.getTagCompound().getBoolean("hasMag")) {
             decharge(player, gun);
+            reload(player);
         } else {
-            ItemStack mag = findMag(player);
+            ItemStack mag = findMag(player, gun.getMetadata());
             if(mag != null && !mag.isEmpty() && ItemMagazin.getCurrentBullets(mag) > 0){
-                System.out.println("RELOAD");
                 gun.getTagCompound().setBoolean("hasMag", true);
                 gun.getTagCompound().setInteger("bullets", ItemMagazin.getCurrentBullets(mag));
             }
