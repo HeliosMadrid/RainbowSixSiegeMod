@@ -70,7 +70,7 @@ public abstract class RenderBullet extends Render<EntityBullet>
 
         pushMatrix();
         color(1.0f, 1.0f, 1.0f, 1.0f);
-        translate(x, y, z);
+        translate(x, y - 1.5, z);
         enableRescaleNormal();
 
         if(renderOutlines)
