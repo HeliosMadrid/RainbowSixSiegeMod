@@ -2,10 +2,7 @@ package fr.helios.rainbowsixsiege.items;
 
 import com.google.common.collect.Sets;
 import fr.helios.rainbowsixsiege.RainbowSixSiege;
-import fr.helios.rainbowsixsiege.items.list.ItemBase;
-import fr.helios.rainbowsixsiege.items.list.ItemMagazin;
-import fr.helios.rainbowsixsiege.items.list.ItemVariant;
-import fr.helios.rainbowsixsiege.items.list.ItemWeapon;
+import fr.helios.rainbowsixsiege.items.list.*;
 import fr.helios.rainbowsixsiege.utils.interfaces.IEnumVariant;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -26,6 +23,7 @@ public class R6Items
     /**Déclarations des items**/
         public ItemMagazin magazin;
         public ItemWeapon weapon;
+        public ItemCar car;
     /**fin**/
 
     private final Set<ItemBase> items = Sets.newHashSet();
@@ -33,6 +31,7 @@ public class R6Items
     public void initItems() {
         magazin = new ItemMagazin();
         weapon = new ItemWeapon();
+        car = new ItemCar();
     }
 
     @SubscribeEvent

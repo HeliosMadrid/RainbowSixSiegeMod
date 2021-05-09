@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import fr.helios.rainbowsixsiege.RainbowSixSiege;
 import fr.helios.rainbowsixsiege.entities.render.RenderBullet;
-import fr.helios.rainbowsixsiege.items.variants.EnumWeapon;
 import fr.helios.rainbowsixsiege.utils.References;
 import fr.helios.rainbowsixsiege.utils.Vec3;
 import net.minecraft.client.Minecraft;
